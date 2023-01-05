@@ -1,5 +1,4 @@
 require("dotenv").config();
-const pg = require("pg");
 // pg.defaults.ssl = true;
 
 
@@ -11,11 +10,11 @@ module.exports = knex({
   useNullAsDefault: true,
   connection: process.env.DATABASE_URL,
   connection: {
-    host: '',
-    port: '',
-    user: '',
-    password: '',
-    database: ''
+    host: '190.60.174.223',
+    port: 50128,
+    user: 'full_pruebas',
+    password: 'Full$$2020',
+    database: 'factu_full_central'
   },
   migrations: {
     directory: "../database/migrations"
