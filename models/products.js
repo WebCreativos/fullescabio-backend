@@ -158,6 +158,7 @@ const saveLog = async (data) => {
     ULTIMO_REG: data.ULTIMO_REG ?? 'No',
     DEPOSITO: data.COD_DEPO,
     TIPO_CUENTA: data.cuenta,
+    FECHA_EJEC: new Date(),
   })
 
 }
