@@ -88,7 +88,7 @@ const getPartidas = async (code) => {
   return db.select("*").from("dbo.compro_partidas").where("COD_ARTICULO", code).andWhere('CANTI', '>', 0).orderBy('FECHA', 'asc').then((row) => row);
 
 }
-const saveAjuste = async (partidas, data) => {
+const saveAjuste = async (data) => {
   var diferencia = data.CANT_PEND - data.CANT_CONTEO
   let partis = []
 

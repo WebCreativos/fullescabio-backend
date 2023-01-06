@@ -37,8 +37,7 @@ async function saveSobrante (ctx) {
 
 async function saveAjuste (ctx) {
   const data = ctx.request.body.data
-  const partidas = await products.getPartidas(data.COD_ARTICULO)
-  const response = await products.saveAjuste(partidas, data)
+  const response = await products.saveAjuste(data)
   console.log(response)
   ctx.ok({ response })
 }
