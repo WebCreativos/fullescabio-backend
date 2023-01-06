@@ -92,6 +92,7 @@ const saveAjuste = async (partidas, data) => {
   var diferencia = data.CANT_PEND - data.CANT_CONTEO
   let partis = []
 
+  const partidas = await db.select("*").from("dbo.compro_partidas").where("COD_ARTICULO", data.COD_ARTICULO).andWhere('CANT_PEND', '>', 0).orderBy('FECHA', 'asc').then((row) => row);
 
 
   while (diferencia > 0) {
@@ -101,16 +102,16 @@ const saveAjuste = async (partidas, data) => {
     }
     const partida = partidas.shift()
     const cantidadARestar = Math.min(partida.CANTI, diferencia)
-    if (cantidadARestar <= partida.CANTI) {
+    if (cantidadARestar <= partida.CANT_PEND) {
       // Si la cantidad a restar es menor o igual a la cantidad pendiente,
       // restamos la cantidad a restar de la partida y añadimos la partida a la lista de partis
-      partida.CANTI -= cantidadARestar
-      diferencia = cantidadARestar - partida.CANTI
+      partida.CANT_PEND -= cantidadARestar
+      diferencia = cantidadARestar - partida.CANT_PEND
       partis.push(partida)
     } else {
       // Si la cantidad a restar es mayor a la cantidad pendiente,
       // restamos la cantidad pendiente de la partida y añadimos la partida a la lista de partis
-      diferencia = cantidadARestar - partida.CANTI
+      diferencia = cantidadARestar - partida.CANT_PEND
       partida.CANTI = 0
       partis.push({
         ...partida
@@ -123,7 +124,7 @@ const saveAjuste = async (partidas, data) => {
       TIPO_CUENTA: data.cuenta,
       PARTIDA: partida.COD_PARTIDA,
       COSTO: partida.COSTO_UNI,
-      CANT_PARTI: partida.CANTI,
+      AJUSTE_PARTI: partida.CANT_PEND,
       UBICACION_ARTI: data.UBICACION_PARTIDA,
       FECHA_EJEC: new Date(),
     })
@@ -138,7 +139,7 @@ const saveAjuste = async (partidas, data) => {
     TIPO_CUENTA: data.cuenta,
     PARTIDA: data.COD_PARTIDA,
     COSTO: LAST_PARTIDA.COSTO_UNI,
-    CANT_PARTI: data.CANT_PEND - data.CANT_CONTEO,
+    AJUSTE_PARTI: data.CANT_PEND - data.CANT_CONTEO,
     UBICACION_ARTI: data.UBICACION_PARTIDA,
     FECHA_EJEC: new Date(),
   })
@@ -174,7 +175,7 @@ const saveSobrante = async (data) => {
     TIPO_CUENTA: data.cuenta,
     PARTIDA: 'CONTEO',
     COSTO: LAST_PARTIDA.COSTO_UNI,
-    CANT_PARTI: data.CANT_CONTEO,
+    AJUSTE_PARTI: data.CANT_CONTEO,
     UBICACION_ARTI: data.UBICACION_PARTIDA,
     FECHA_EJEC: new Date(),
   })
