@@ -92,7 +92,11 @@ const saveAjuste = async (data) => {
   var diferencia = data.CANT_PEND - data.CANT_CONTEO
   let partis = []
 
-  const partidas = await db.select("*").from("dbo.compro_partidas").where("COD_ARTICULO", data.COD_ARTICULO).andWhere('CANT_PEND', '>', 0).orderBy('FECHA', 'asc').then((row) => row);
+  const partidas = await db.select("*").from("dbo.compro_partidas")
+  .where("COD_ARTICULO", data.COD_ARTICULO).andWhere('CANT_PEND', '>', 0)
+  .andWhere('CANT_PEND', '>', 0)
+  .andWhere('COD_DEPO', data.COD_DEPO)
+  .orderBy('FECHA', 'asc').then((row) => row);
 
 
   while (diferencia > 0) {
