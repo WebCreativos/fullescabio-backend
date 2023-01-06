@@ -101,7 +101,7 @@ const saveAjuste = async (partidas, data) => {
       break
     }
     const partida = partidas.shift()
-    const cantidadARestar = Math.min(partida.CANTI, diferencia)
+    const cantidadARestar = Math.min(partida.CANT_PEND, diferencia)
     if (cantidadARestar <= partida.CANT_PEND) {
       // Si la cantidad a restar es menor o igual a la cantidad pendiente,
       // restamos la cantidad a restar de la partida y añadimos la partida a la lista de partis
