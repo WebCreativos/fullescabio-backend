@@ -125,6 +125,7 @@ const saveAjuste = async (partidas, data) => {
       COSTO: partida.COSTO_UNI,
       CANT_PARTI: partida.CANTI,
       UBICACION_ARTI: data.UBICACION_PARTIDA,
+      FECHA_EJEC: new Date(),
     })
   }
 
@@ -139,6 +140,7 @@ const saveAjuste = async (partidas, data) => {
     COSTO: LAST_PARTIDA.COSTO_UNI,
     CANT_PARTI: data.CANT_PEND - data.CANT_CONTEO,
     UBICACION_ARTI: data.UBICACION_PARTIDA,
+    FECHA_EJEC: new Date(),
   })
 
 }
