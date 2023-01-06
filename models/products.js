@@ -174,6 +174,7 @@ const saveSobrante = async (data) => {
     COSTO: LAST_PARTIDA.COSTO_UNI,
     CANT_PARTI: data.CANT_CONTEO,
     UBICACION_ARTI: data.UBICACION_PARTIDA,
+    FECHA_EJEC: new Date(),
   })
 
 }
