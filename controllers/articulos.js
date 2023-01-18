@@ -1,14 +1,7 @@
 const products = require('../models/products')
 async function find (ctx) {
   let barcode = ctx.params.barcode
-  let data = await products.fyndByBarcode(barcode)
-  data = data.map((d)=>{
-    return{
-      ...d,
-      CANTIDAD:0,
-      FECHA_VENCI:(d.FECHA_VENCI)? d.FECHA_VENCI[0] : null
-    }
-  })
+  let data =  await products.fyndByBarcode(barcode)
   ctx.ok({ data })
 }
 async function findExtra (ctx) {

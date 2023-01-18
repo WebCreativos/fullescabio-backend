@@ -24,7 +24,7 @@ const findAllLocations = async () => {
   } 
 */
 const fyndByBarcode = async (barcode) => {
-  const articulos = db.with('COD_ARTICULOS', function (query) {
+  var articulos = await db.with('COD_ARTICULOS', function (query) {
       query.select('COD_ARTICULO', 'COD_BARRAS', 'UNI_X_BULTO')
         .from('dbo.ARTICULOS_CODI_BARRAS')
         .unionAll(function () {
@@ -44,11 +44,26 @@ const fyndByBarcode = async (barcode) => {
     .where('c.CANT_PEND', '>', 0)
     .andWhere('c.COD_DEPO', 'DEP')
       .then((row) => {
-      console.log(row)
+      console.log(row) 
       if(row.FECHA_VENCI?.length>0)
         row.FECHA_VENCI = row.FECHA_VENCI[0]
       return row
     });
+    articulos = articulos.reduce((acc, curr) => {
+      const index = acc.findIndex(item => item.UBICACION_PARTIDA === curr.UBICACION_PARTIDA)
+      index > -1 ? acc[index].CANT_PEND += curr.CANT_PEND : acc.push({
+        ...curr,
+        CANT_PEND: curr.CANT_PEND
+      })
+      return acc
+    }, []).map((d)=>{
+      return{
+        ...d,
+        CANTIDAD:0,
+        FECHA_VENCI:(d.FECHA_VENCI)? d.FECHA_VENCI[0] : null
+      }
+    })
+        
   return articulos;
 
   /*
