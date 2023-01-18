@@ -9,6 +9,13 @@ async function findExtra (ctx) {
   let data = await products.findExtraInfo(code)
   ctx.ok({ data })
 }
+async function findPartidasWithPendCant (ctx) {
+  let loc = ctx.params.loc
+  let data = await products.getPartidasWithPendCant(loc)
+  data = data.length
+  ctx.ok(data)
+}
+
 async function findAllLocations (ctx) {
   let code = ctx.params.code
   let data = (await products.findAllLocations()).map((row) => row.ubicacion_partida)
@@ -41,5 +48,6 @@ module.exports = {
   findExtra,
   saveAjuste,
   saveSobrante,
-  findAllLocations
+  findAllLocations,
+  findPartidasWithPendCant
 }

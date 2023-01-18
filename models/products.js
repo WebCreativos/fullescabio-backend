@@ -7,22 +7,12 @@ const findExtraInfo = async (code) => {
 const findAllLocations = async () => {
   return db.select("ubicacion_partida").from("dbo.compro_partidas").groupBy('ubicacion_partida')
 };
-// GET SPECIFIC USER BY ID
-/*
-  const fyndByBarcode = async (barcode) =>{
-    console.log(barcode)
-    return db('dbo.ARTICULOS').join('dbo.ARTICULOS_CODI_BARRAS', 'dbo.ARTICULOS_CODI_BARRAS.COD_ARTICULO', '=', 'dbo.ARTICULOS.COD_ARTICULO')
-    .select('ARTICULOS.COD_ARTICULO','ARTICULOS.COD_BARRAS',
-    'ARTICULOS_CODI_BARRAS.UNI_X_BULTO',
-    'ARTICULOS.VALIDAR_VENCI','ARTICULOS.DESCRIP_ARTI',
-    'ARTICULOS.FECHA_INTE',
-    'ARTICULOS.FECHA_ULTIMO_MOV',
-    'ARTICULOS.FECHA_ALTA',
-    'ARTICULOS.FECHA_MODI',
-    )
-    .where('ARTICULOS.COD_BARRAS', barcode)
-  } 
-*/
+const getPartidasWithPendCant = async (loc) => {
+  return db.select("[CP].[CANT_PEND]","[COD].[DESCRIP_ARTI]").from("dbo.compro_partidas AS cp").
+  innerJoin('dbo.ARTICULOS as COD', 'COD.COD_ARTICULO', 'cp.COD_ARTICULO').where('cp.CANT_PEND', '>', 0).andWhere('cp.ubicacion_partida', loc).then((row) => row);
+}
+
+
 const fyndByBarcode = async (barcode) => {
   var articulos = await db.with('COD_ARTICULOS', function (query) {
       query.select('COD_ARTICULO', 'COD_BARRAS', 'UNI_X_BULTO')
@@ -65,44 +55,7 @@ const fyndByBarcode = async (barcode) => {
     })
         
   return articulos;
-
-  /*
-  return db.select(
-    'a.COD_ARTICULO',
-    'a.DESCRIP_ARTI',
-    'c.FECHA',
-    'c.COD_DEPO',
-    'c.COD_PARTIDA',
-    'c.CANT_PEND',
-    'c.FECHA_VENCI',
-    'c.UBICACION_PARTIDA',
-    db.raw('SUBSTRING(c.ubicacion_partida, 1, 4) clave_1'),
-    db.raw('SUBSTRING(c.ubicacion_partida, 6, 1) clave_2'),
-    'a.VALIDAR_VENCI',
-    'c.CANTI'
-  )
-  .from('DBO.compro_partidas AS c')
-  .innerJoin('DBO.ARTICULOS AS a', 'c.COD_ARTICULO', 'a.COD_ARTICULO')
-  .innerJoin('DBO.ARTICULOS_CODI_BARRAS AS acb', 'acb.COD_ARTICULO', 'a.COD_ARTICULO')
-  .innerJoin('DBO.COMP_EMITIDOS AS comp', function() {
-    this.on('c.TIPO', 'comp.TIPO').andOn('c.NUM', 'comp.NUM');
-  })
-  .leftJoin('DBO.CLIENTES AS cli', 'comp.CLIENTE', 'cli.NUM_CLIENTE')
-  .where('c.CANT_PEND', '>', 0)
-  .andWhere('c.COD_DEPO', 'DEP')
-  .andWhere(function() {
-    this.where('a.COD_BARRAS',barcode).orWhere('acb.COD_BARRAS', barcode);
-  })
-  .orderBy('FECHA_VENCI','DESC')
-  */
-  //SQL RAW METHOD
-  // return db.raw(`SELECT * FROM users
-  //                  WHERE id = ${id}`);
 };
-const getPartidas = async (code) => {
-  return db.select("*").from("dbo.compro_partidas").where("COD_ARTICULO", code).andWhere('CANTI', '>', 0).orderBy('FECHA', 'asc').then((row) => row);
-
-}
 const saveAjuste = async (data) => {
   var diferencia = data.CANT_PEND - data.CANT_CONTEO
   let partis = []
@@ -203,11 +156,11 @@ const saveSobrante = async (data) => {
 
 
 module.exports = {
+  getPartidasWithPendCant,
   findAllLocations,
   fyndByBarcode,
   findExtraInfo,
   saveSobrante,
-  getPartidas,
   saveAjuste,
   saveLog
 }

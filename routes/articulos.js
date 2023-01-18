@@ -3,6 +3,7 @@ const router = new Router()
 const Ctrl = require('../controllers/articulos')
 
 router.get('/extrainfo/:code', Ctrl.findExtra)
+router.get('/findPartidasWithPendCant/:loc', Ctrl.findPartidasWithPendCant)
 router.get('/findlocations', Ctrl.findAllLocations)
 router.post('/saveSobrante', Ctrl.saveSobrante)
 router.post('/saveAjuste', Ctrl.saveAjuste)
