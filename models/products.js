@@ -58,65 +58,61 @@ const fyndByBarcode = async (barcode) => {
 };
 const saveAjuste = async (data) => {
   var diferencia = data.CANT_PEND - data.CANT_CONTEO
+  var AJUSTE_PARTI = 0
   let partis = []
 
-  const partidas = await db.select("*").from("dbo.compro_partidas")
-  .where("COD_ARTICULO", data.COD_ARTICULO).andWhere('CANT_PEND', '>', 0)
-  .andWhere('CANT_PEND', '>', 0)
-  .andWhere('COD_DEPO', data.COD_DEPO)
-  .orderBy('FECHA', 'asc').then((row) => row);
+  // Verificamos que la tabla "dbo.compro_partidas" existe y tiene el esquema correcto
+    const partidas = await db.select("*").from("dbo.compro_partidas")
+    .where("COD_ARTICULO", data.COD_ARTICULO).andWhere('CANT_PEND', '>', 0)
+    .andWhere('COD_DEPO', data.COD_DEPO)
+    .andWhere('UBICACION_PARTIDA', data.UBICACION_PARTIDA)
+    .orderBy('FECHA', 'asc').then((row) => row);
 
-
-  while (diferencia > 0) {
-    // Si ya no quedan partidas, terminamos el bucle
-    if (partidas.length === 0) {
-      break
-    }
-    const partida = partidas.shift()
-    const cantidadARestar = Math.min(partida.CANT_PEND, diferencia)
-    if (cantidadARestar <= partida.CANT_PEND) {
-      // Si la cantidad a restar es menor o igual a la cantidad pendiente,
-      // restamos la cantidad a restar de la partida y añadimos la partida a la lista de partis
-      partida.CANT_PEND -= cantidadARestar
-      diferencia = cantidadARestar - partida.CANT_PEND
-      partis.push(partida)
-    } else {
-      // Si la cantidad a restar es mayor a la cantidad pendiente,
-      // restamos la cantidad pendiente de la partida y añadimos la partida a la lista de partis
-      diferencia = cantidadARestar - partida.CANT_PEND
-      partida.CANTI = 0
-      partis.push({
-        ...partida
-      })
-    }
+    while (diferencia > 0) {
+      // Si ya no quedan partidas, terminamos el bucle
+      if (partidas.length === 0) {
+        break
+      }
+      const partida = partidas.shift()
+      if (diferencia <= partida.CANT_PEND) {
+        // Si la cantidad a restar es menor o igual a la cantidad pendiente,
+        // restamos la cantidad a restar de la partida y ponemos la cantidad pendiente en 0
+        partida.CANT_PEND -= diferencia
+        AJUSTE_PARTI = diferencia
+        diferencia = 0
+        partis.push(partida)
+      } else {
+        // Si la cantidad a restar es mayor a la cantidad pendiente,
+        // restamos la cantidad pendiente de la diferencia 
+        diferencia -= partida.CANT_PEND
+        AJUSTE_PARTI = partida.CANT_PEND
+        partida.CANT_PEND = 0
+        partis.push({
+          ...partida
+        })
+      }
+    
     // actualiza la partida
-    await db('dbo.TOMAFI_PART').insert({
-      COD_ARTICULO: partida.COD_ARTICULO,
-      DESCRIP_ARTI: data.DESCRIP_ARTI,
-      TIPO_CUENTA: data.cuenta,
-      PARTIDA: partida.COD_PARTIDA,
-      COSTO: partida.COSTO_UNI,
-      AJUSTE_PARTI: partida.CANT_PEND,
-      UBICACION_ARTI: data.UBICACION_PARTIDA,
-      FECHA_EJEC: new Date(),
-    })
-  }
-
-  const LAST_PARTIDA = await db.select("*").from("dbo.compro_partidas").where("COD_ARTICULO", data.COD_ARTICULO).orderBy('FECHA', 'desc').first().then((row) => row);
-
-
-  await db('dbo.TOMAFI_PART').insert({
-    COD_ARTICULO: data.COD_ARTICULO,
-    DESCRIP_ARTI: data.DESCRIP_ARTI,
-    TIPO_CUENTA: data.cuenta,
-    PARTIDA: data.COD_PARTIDA,
-    COSTO: LAST_PARTIDA.COSTO_UNI,
-    AJUSTE_PARTI: data.CANT_PEND - data.CANT_CONTEO,
-    UBICACION_ARTI: data.UBICACION_PARTIDA,
-    FECHA_EJEC: new Date(),
-  })
-
+    try {
+      await db('dbo.TOMAFI_PART').insert({
+        COD_ARTICULO: partida.COD_ARTICULO,
+        DESCRIP_ARTI: data.DESCRIP_ARTI,
+        TIPO_CUENTA: data.cuenta,
+        PARTIDA: partida.COD_PARTIDA,
+        COSTO: partida.COSTO_UNI,
+        CANT_PEND: partida.CANT_PEND,
+        AJUSTE_PARTI:AJUSTE_PARTI,
+        UBICACION_ARTI: data.UBICACION_PARTIDA,
+        FECHA_EJEC: new Date(),
+      });
+      } catch(error) {
+      console.error("Error al actualizar partida: ", error);
+      throw error;
+      }
+      }
 }
+
+
 
 const saveLog = async (data) => {
   await db('dbo.TOMAFI_LOG').insert({
