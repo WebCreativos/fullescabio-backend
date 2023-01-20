@@ -9,7 +9,7 @@ const findAllLocations = async () => {
 };
 const getPartidasWithPendCant = async (loc) => {
   return db.select("[CP].[CANT_PEND]","[COD].[DESCRIP_ARTI]").from("dbo.compro_partidas AS cp").
-  innerJoin('dbo.ARTICULOS as COD', 'COD.COD_ARTICULO', 'cp.COD_ARTICULO').where('cp.CANT_PEND', '>', 0).andWhere('cp.ubicacion_partida', loc).then((row) => row);
+  innerJoin('dbo.ARTICULOS as COD', 'COD.COD_ARTICULO', 'cp.COD_ARTICULO').where('cp.CANT_PEND', '>', 0).andWhere('cp.ubicacion_partida', loc).groupBy('COD.COD_ARTICULO').then((row) => row);
 }
 
 
@@ -103,6 +103,7 @@ const saveAjuste = async (data) => {
         CANT_PEND: partida.CANT_PEND,
         AJUSTE_PARTI:AJUSTE_PARTI,
         UBICACION_ARTI: data.UBICACION_PARTIDA,
+        CAM_FECH:data.CAM_FECH,
         FECHA_EJEC: new Date(),
       });
       } catch(error) {
@@ -145,6 +146,7 @@ const saveSobrante = async (data) => {
     COSTO: LAST_PARTIDA.COSTO_UNI,
     AJUSTE_PARTI: data.CANT_CONTEO,
     UBICACION_ARTI: data.UBICACION_PARTIDA,
+    CAM_FECH:data.CAM_FECH,
     FECHA_EJEC: new Date(),
   })
 
