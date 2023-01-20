@@ -130,6 +130,7 @@ const saveLog = async (data) => {
     ULTIMO_REG: data.ULTIMO_REG ?? 'No',
     DEPOSITO: data.COD_DEPO,
     TIPO_CUENTA: data.cuenta,
+    CAM_FECH:(data.CAM_FECH)?'Si':'No',
     FECHA_EJEC: new Date(),
   })
 
@@ -146,7 +147,6 @@ const saveSobrante = async (data) => {
     COSTO: LAST_PARTIDA.COSTO_UNI,
     AJUSTE_PARTI: data.CANT_CONTEO,
     UBICACION_ARTI: data.UBICACION_PARTIDA,
-    CAM_FECH:data.CAM_FECH,
     FECHA_EJEC: new Date(),
   })
 
