@@ -1,7 +1,7 @@
 const products = require('../models/products')
 async function find (ctx) {
-  let barcode = ctx.params.barcode
-  let data =  await products.fyndByBarcode(barcode)
+  let query = ctx.request.query
+  let data =  await products.fyndByBarcode(query)
   ctx.ok({ data })
 }
 async function findExtra (ctx) {

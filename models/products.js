@@ -8,12 +8,12 @@ const findAllLocations = async () => {
   return db.select("ubicacion_partida").from("dbo.compro_partidas").groupBy('ubicacion_partida')
 };
 const getPartidasWithPendCant = async (loc) => {
-  return db.select("[CP].[CANT_PEND]","[COD].[DESCRIP_ARTI]").from("dbo.compro_partidas AS cp").
-  innerJoin('dbo.ARTICULOS as COD', 'COD.COD_ARTICULO', 'cp.COD_ARTICULO').where('cp.CANT_PEND', '>', 0).andWhere('cp.ubicacion_partida', loc).groupBy('COD.COD_ARTICULO').then((row) => row);
+  return db.select("*").from("dbo.compro_partidas AS cp").
+  innerJoin('dbo.ARTICULOS as COD', 'COD.COD_ARTICULO', 'cp.COD_ARTICULO').where('cp.CANT_PEND', '>', 0).andWhere('cp.ubicacion_partida', loc).groupBy('COD_BARRAS').then((row) => row);
 }
 
 
-const fyndByBarcode = async (barcode) => {
+const fyndByBarcode = async (data) => {
   var articulos = await db.with('COD_ARTICULOS', function (query) {
       query.select('COD_ARTICULO', 'COD_BARRAS', 'UNI_X_BULTO')
         .from('dbo.ARTICULOS_CODI_BARRAS')
@@ -30,9 +30,10 @@ const fyndByBarcode = async (barcode) => {
     .from('COD_ARTICULOS as ART')
     .innerJoin('dbo.ARTICULOS as COD', 'ART.COD_ARTICULO', 'COD.COD_ARTICULO')
     .innerJoin('DBO.compro_partidas as C', 'ART.COD_ARTICULO', 'C.COD_ARTICULO')
-    .where('ART.COD_BARRAS', barcode)
+    .where('ART.COD_BARRAS', data.barcode)
     .where('c.CANT_PEND', '>', 0)
     .andWhere('c.COD_DEPO', 'DEP')
+    .andWhere('c.ubicacion_partida', data.ubicacion)
       .then((row) => {
       console.log(row) 
       if(row.FECHA_VENCI?.length>0)
@@ -105,6 +106,7 @@ const saveAjuste = async (data) => {
         UBICACION_ARTI: data.UBICACION_PARTIDA,
         CAM_FECH:data.CAM_FECH,
         FECHA_EJEC: new Date(),
+        FECHA_VENCI: partida.FECHA_VENCI,
       });
       } catch(error) {
       console.error("Error al actualizar partida: ", error);
@@ -138,16 +140,19 @@ const saveLog = async (data) => {
 const saveSobrante = async (data) => {
 
   const LAST_PARTIDA = await db.select("*").from("dbo.compro_partidas").where("COD_ARTICULO", data.COD_ARTICULO).orderBy('FECHA', 'desc').first().then((row) => row);
+  const article = await db.select("*").from("dbo.ARTICULOS").where("COD_ARTICULO", data.COD_ARTICULO).first().then((row) => row);
 
   await db('dbo.TOMAFI_PART').insert({
     COD_ARTICULO: data.COD_ARTICULO,
     DESCRIP_ARTI: data.DESCRIP_ARTI,
     TIPO_CUENTA: data.cuenta,
-    PARTIDA: 'CONTEO',
-    COSTO: LAST_PARTIDA.COSTO_UNI,
-    AJUSTE_PARTI: data.CANT_CONTEO,
+    PARTIDA: 'AJUSTE',
+    COSTO: article.PRECIO_UNI,
+    AJUSTE_PARTI: 3,
+    CANT_PEND: data.CANT_CONTEO,
     UBICACION_ARTI: data.UBICACION_PARTIDA,
     FECHA_EJEC: new Date(),
+    FECHA_VENCI: data.FECHA_VENCI,
   })
 
 }
