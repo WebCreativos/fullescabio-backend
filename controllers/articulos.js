@@ -12,7 +12,7 @@ async function findExtra (ctx) {
 async function findPartidasWithPendCant (ctx) {
   let loc = ctx.params.loc
   let data = await products.getPartidasWithPendCant(loc)
-  ctx.ok(data.count)
+  ctx.ok(data.length)
 }
 
 async function findAllLocations (ctx) {
