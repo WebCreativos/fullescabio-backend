@@ -145,10 +145,10 @@ const saveSobrante = async (data) => {
   await db('dbo.TOMAFI_PART').insert({
     COD_ARTICULO: data.COD_ARTICULO,
     DESCRIP_ARTI: data.DESCRIP_ARTI,
-    TIPO_CUENTA: data.cuenta,
+    TIPO_CUENTA: 3,
     PARTIDA: 'AJUSTE',
     COSTO: article.PRECIO_UNI,
-    AJUSTE_PARTI: 3,
+    AJUSTE_PARTI: null,
     CANT_PEND: data.CANT_CONTEO,
     UBICACION_ARTI: data.UBICACION_PARTIDA,
     FECHA_EJEC: new Date(),
