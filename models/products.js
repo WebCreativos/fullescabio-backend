@@ -137,6 +137,18 @@ const saveLog = async (data) => {
   })
 
 }
+const savePendings = async (data) => {
+  await data.articles.forEach(async el => {
+    await db('full_pruebas.TOMAFI_PEND').insert({
+      UBICACION_PARTIDA: data.UBICACION_PARTIDA,
+      COD_ARTICULO: el.COD_ARTICULO,
+      FECHA: new Date(),
+    })      
+  });
+
+}
+
+
 const saveSobrante = async (data) => {
 
   const LAST_PARTIDA = await db.select("*").from("dbo.compro_partidas").where("COD_ARTICULO", data.COD_ARTICULO).orderBy('FECHA', 'desc').first().then((row) => row);
@@ -163,6 +175,7 @@ module.exports = {
   findAllLocations,
   fyndByBarcode,
   findExtraInfo,
+  savePendings,
   saveSobrante,
   saveAjuste,
   saveLog

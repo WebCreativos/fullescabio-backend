@@ -8,6 +8,7 @@ router.get('/findlocations', Ctrl.findAllLocations)
 router.post('/saveSobrante', Ctrl.saveSobrante)
 router.post('/saveAjuste', Ctrl.saveAjuste)
 router.post('/saveLog', Ctrl.saveLog)
+router.post('/savePendings', Ctrl.savePendings)
 router.get('/', Ctrl.find)
 
 module.exports = router.routes()

@@ -12,7 +12,7 @@ async function findExtra (ctx) {
 async function findPartidasWithPendCant (ctx) {
   let loc = ctx.params.loc
   let data = await products.getPartidasWithPendCant(loc)
-  ctx.ok(data.length)
+  ctx.ok(data)
 }
 
 async function findAllLocations (ctx) {
@@ -26,6 +26,13 @@ async function saveLog (ctx) {
   console.log(response)
   ctx.ok({ response })
 }
+async function savePendings (ctx) {
+  const data = ctx.request.body.data
+  const response = await products.savePendings(data)
+  console.log(response)
+  ctx.ok({ response })
+}
+
 async function saveSobrante (ctx) {
   const data = ctx.request.body.data
   const response = await products.saveSobrante(data)
@@ -47,6 +54,7 @@ module.exports = {
   findExtra,
   saveAjuste,
   saveSobrante,
+  savePendings,
   findAllLocations,
   findPartidasWithPendCant
 }
