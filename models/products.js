@@ -8,7 +8,7 @@ const findAllLocations = async () => {
   return db.select("ubicacion_partida").from("dbo.compro_partidas").groupBy('ubicacion_partida')
 };
 const getPartidasWithPendCant = async (loc) => {
-  return db.select('COD_ARTICULO').from("dbo.compro_partidas AS cp").where('cp.CANT_PEND', '>', 0).andWhere('cp.ubicacion_partida', loc).
+  return db.select('*').from("dbo.compro_partidas AS cp").where('cp.CANT_PEND', '>', 0).andWhere('cp.ubicacion_partida', loc).
   groupBy('COD_ARTICULO')
 }
 
@@ -140,6 +140,7 @@ const saveLog = async (data) => {
 }
 const savePendings = async (data) => {
   await data.articles.forEach(async el => {
+
     await db('dbo.TOMAFI_LOG').insert({
       USUARIO: data.USUARIO || 'TERMINAR CUENTA',
       UBICACION_ARTI: data.UBICACION_PARTIDA,
