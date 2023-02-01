@@ -33,7 +33,7 @@ const fyndByBarcode = async (data) => {
     .where('ART.COD_BARRAS', data.barcode)
     .where('c.CANT_PEND', '>', 0)
     .andWhere('c.COD_DEPO', 'DEP')
-    .andWhere('c.ubicacion_partida', data.ubicacion)
+    //.andWhere('c.ubicacion_partida', data.ubicacion)
       .then((row) => {
       console.log(row) 
       if(row.FECHA_VENCI?.length>0)
@@ -158,9 +158,9 @@ const saveSobrante = async (data) => {
     COD_ARTICULO: data.COD_ARTICULO,
     DESCRIP_ARTI: data.DESCRIP_ARTI,
     TIPO_CUENTA: 3,
-    PARTIDA: 'AJUSTE',
+    PARTIDA: 'SOBRANTE',
     COSTO: article.PRECIO_UNI,
-    AJUSTE_PARTI: null,
+    AJUSTE_PARTI: data.CANT_CONTEO,
     CANT_PEND: data.CANT_CONTEO,
     UBICACION_ARTI: data.UBICACION_PARTIDA,
     FECHA_EJEC: new Date(),
