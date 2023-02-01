@@ -8,7 +8,7 @@ const findAllLocations = async () => {
   return db.select("ubicacion_partida").from("dbo.compro_partidas").groupBy('ubicacion_partida')
 };
 const getPartidasWithPendCant = async (loc) => {
-  return db.select('*').from("dbo.compro_partidas AS cp").where('cp.CANT_PEND', '>', 0).andWhere('cp.ubicacion_partida', loc).
+  return db.select("COD_ARTICULO","COD_DEPO","FECHA_VENCI","DESCRIP_ARTI").from("dbo.compro_partidas AS cp").where('cp.CANT_PEND', '>', 0).andWhere('cp.ubicacion_partida', loc).
   groupBy('COD_ARTICULO')
 }
 
