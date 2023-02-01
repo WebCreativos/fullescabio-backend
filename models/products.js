@@ -8,8 +8,8 @@ const findAllLocations = async () => {
   return db.select("ubicacion_partida").from("dbo.compro_partidas").groupBy('ubicacion_partida')
 };
 const getPartidasWithPendCant = async (loc) => {
-  return db.select("COD_ARTICULO","COD_DEPO","FECHA_VENCI","DESCRIP_ARTI").from("dbo.compro_partidas AS cp").where('cp.CANT_PEND', '>', 0).andWhere('cp.ubicacion_partida', loc).
-  groupBy('COD_ARTICULO')
+  return db.select("COD_ARTICULO").from("dbo.compro_partidas AS cp").where('cp.CANT_PEND', '>', 0).andWhere('cp.ubicacion_partida', loc).
+  groupBy("COD_ARTICULO")
 }
 
 
@@ -145,6 +145,8 @@ const savePendings = async (data) => {
       USUARIO: data.USUARIO || 'TERMINAR CUENTA',
       UBICACION_ARTI: data.UBICACION_PARTIDA,
       COD_ARTICULO: el.COD_ARTICULO,
+      COD_DEP: data.COD_DEP,
+      DESCRIP_ARTI: "N/A",
       FECHA_EJEC: new Date(),
       CONTADO:"N"
     })      
