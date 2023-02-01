@@ -147,6 +147,11 @@ const savePendings = async (data) => {
       COD_ARTICULO: el.COD_ARTICULO,
       COD_DEP: data.COD_DEP,
       DESCRIP_ARTI: "N/A",
+      TIPO_CUENTA:0,
+      CANT_CONTEO: 0,
+      UNI_X_BULTO: 0,
+      CANT_SISTEMA: 0,
+      DIFERENCIA: 0,
       FECHA_EJEC: new Date(),
       CONTADO:"N"
     })      
