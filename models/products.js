@@ -141,6 +141,7 @@ const saveLog = async (data) => {
 const savePendings = async (data) => {
   await data.articles.forEach(async el => {
     await db('dbo.TOMAFI_LOG').insert({
+      USUARIO: data.USUARIO || 'TERMINAR CUENTA',
       UBICACION_ARTI: data.UBICACION_PARTIDA,
       COD_ARTICULO: el.COD_ARTICULO,
       FECHA_EJEC: new Date(),
