@@ -134,15 +134,17 @@ const saveLog = async (data) => {
     TIPO_CUENTA: data.cuenta,
     CAM_FECH:(data.CAM_FECH)?'Si':'No',
     FECHA_EJEC: new Date(),
+    CONTADO:"S"
   })
 
 }
 const savePendings = async (data) => {
   await data.articles.forEach(async el => {
-    await db('full_pruebas.TOMAFI_PEND').insert({
-      UBICACION_PARTIDA: data.UBICACION_PARTIDA,
+    await db('dbo.TOMAFI_LOG').insert({
+      UBICACION_ARTI: data.UBICACION_PARTIDA,
       COD_ARTICULO: el.COD_ARTICULO,
-      FECHA: new Date(),
+      FECHA_EJEC: new Date(),
+      CONTADO:"N"
     })      
   });
 
