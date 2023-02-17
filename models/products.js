@@ -69,6 +69,12 @@ const saveAjuste = async (data) => {
     .andWhere('UBICACION_PARTIDA', data.UBICACION_PARTIDA)
     .orderBy('FECHA', 'asc').then((row) => row);
 
+    if(diferencia<0) {
+      data.CANT_CONTEO = -diferencia
+      await saveSobrante(data)
+      return
+    }
+
     while (diferencia > 0) {
       // Si ya no quedan partidas, terminamos el bucle
       if (partidas.length === 0) {
@@ -145,7 +151,6 @@ const savePendings = async (data) => {
       USUARIO: data.USUARIO || 'TERMINAR CUENTA',
       UBICACION_ARTI: data.UBICACION_PARTIDA,
       COD_ARTICULO: el.COD_ARTICULO,
-      COD_DEP: data.COD_DEP,
       DESCRIP_ARTI: "N/A",
       TIPO_CUENTA:0,
       CANT_CONTEO: 0,
