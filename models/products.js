@@ -12,6 +12,12 @@ const getPartidasWithPendCant = async (loc) => {
   groupBy("COD_ARTICULO")
 }
 
+const findByDateAndCod = async (query) => {
+  const fecha = new Date();
+  const fechaBusqueda = `${fecha.getFullYear()}-${('0' + (fecha.getMonth() + 1)).slice(-2)}-${('0' + fecha.getDate()).slice(-2)}`;
+  return db.select("*").from("dbo.TOMAFI_PART as tp").where("tp.COD_ARTICULO", query.code).andWhere('tp.UBICACION_ARTI', query.loc).andWhereRaw(`CAST([FECHA_EJEC] AS DATE) = '${fechaBusqueda}'`)
+};
+
 
 const fyndByBarcode = async (data) => {
   var articulos = await db.with('COD_ARTICULOS', function (query) {
@@ -101,6 +107,28 @@ const saveAjuste = async (data) => {
     
     // actualiza la partida
     try {
+
+      const partExists = await findByDateAndCod({code:partida.COD_ARTICULO, loc:partida.UBICACION_PARTIDA})
+      if(partExists.length>0){
+        const fecha = new Date();
+        const fechaBusqueda = `${fecha.getFullYear()}-${('0' + (fecha.getMonth() + 1)).slice(-2)}-${('0' + fecha.getDate()).slice(-2)}`;
+        await db('dbo.TOMAFI_PART').where('COD_ARTICULO', partida.COD_ARTICULO)
+        .andWhere('UBICACION_ARTI', partida.UBICACION_PARTIDA).
+        andWhereRaw(`CAST([FECHA_EJEC] AS DATE) = '${fechaBusqueda}'`).update({
+          COD_ARTICULO: partida.COD_ARTICULO,
+          DESCRIP_ARTI: data.DESCRIP_ARTI,
+          TIPO_CUENTA: data.cuenta,
+          PARTIDA: partida.COD_PARTIDA,
+          COSTO: partida.COSTO_UNI,
+          CANT_PEND: partida.CANT_PEND,
+          AJUSTE_PARTI:AJUSTE_PARTI,
+          UBICACION_ARTI: data.UBICACION_PARTIDA,
+          CAM_FECH:data.CAM_FECH,
+          FECHA_EJEC: new Date(),
+          FECHA_VENCI: partida.FECHA_VENCI,
+        })
+      }
+
       await db('dbo.TOMAFI_PART').insert({
         COD_ARTICULO: partida.COD_ARTICULO,
         DESCRIP_ARTI: data.DESCRIP_ARTI,
@@ -188,6 +216,7 @@ const saveSobrante = async (data) => {
 
 module.exports = {
   getPartidasWithPendCant,
+  findByDateAndCod,
   findAllLocations,
   fyndByBarcode,
   findExtraInfo,

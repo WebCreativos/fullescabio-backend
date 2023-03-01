@@ -9,6 +9,14 @@ async function findExtra (ctx) {
   let data = await products.findExtraInfo(code)
   ctx.ok({ data })
 }
+
+async function findByDateAndCod (ctx) {
+  let query = ctx.request.query
+  let data = await products.findByDateAndCod(query)
+  ctx.ok(data.length )
+}
+
+
 async function findPartidasWithPendCant (ctx) {
   let loc = ctx.params.loc
   let data = await products.getPartidasWithPendCant(loc)
@@ -56,5 +64,6 @@ module.exports = {
   saveSobrante,
   savePendings,
   findAllLocations,
+  findByDateAndCod,
   findPartidasWithPendCant
 }
